@@ -1,8 +1,8 @@
 # T1D analysis set-up
 
-#Scripts and running order
+# Scripts and running order
 
-##Collating genotype data:
+## Collating genotype data:
 ```
 creating_genotype_data_anuhba.R
 ```
@@ -14,9 +14,9 @@ generate_outcome.R
 Regenerates the outcome file for Illu and Affy so can trace back all the way.
 
 
-##Imputation then performed on the Michigan Imputation server using the genotype data aligned to the same strand as the 1000 genomes strand.
+## Imputation then performed on the Michigan Imputation server using the genotype data aligned to the same strand as the 1000 genomes strand.
 
-##PCA
+## PCA
 
 ```
 rename_variants_Affy.sh	

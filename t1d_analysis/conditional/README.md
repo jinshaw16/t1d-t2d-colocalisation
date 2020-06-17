@@ -1,6 +1,6 @@
 # T1D conditional analyses
 
-#Scripts and running order
+# Scripts and running order
 
 ```
 cond_setup_t2d_suggestive_dups_drop.R

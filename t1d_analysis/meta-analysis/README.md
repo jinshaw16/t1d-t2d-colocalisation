@@ -1,8 +1,8 @@
 # T1D meta-analysis
 
-#Scripts and running order
+# Scripts and running order
 
-##UK association analyses:
+## UK association analyses:
 
 ```
 assoctest_newml_all.R
@@ -22,7 +22,7 @@ qc_post_imputation_all_dups_drop.R
 More in-depth SNP QC
 
 
-##UK + Sardinia meta-analysis
+## UK + Sardinia meta-analysis
 ```
 meta_sardinia_all_dups_drop.R
 ```

@@ -1,6 +1,6 @@
-#colocalisation analyses
+# colocalisation analyses
 
-#scripts and running order
+# scripts and running order
 
 ```
 coloc_t2d_all_dups_drop_fdr_all.R
