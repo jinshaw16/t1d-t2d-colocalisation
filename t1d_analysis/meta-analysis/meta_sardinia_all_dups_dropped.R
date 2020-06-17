@@ -139,6 +139,14 @@ meta$Chisq <- qchisq(meta$pfinal,1, lower=F)
 lam<-median(meta$Chisq)/qchisq(0.5,1)
 max=-1*log10(min(meta$pfinal))
 
+#and one for GWAScatalog in the appropriate file format:
+f1<-final[,c("chromosome","position","pfinal","alleleA","alleleB","betafinal","sefinal")]
+colnames(f1)<-c("chromosome","base_pair_location","p_value","other_allele", "effect_allele","beta","standard_error")
+
+f1<-f1[,c("chromosome","base_pair_location","p_value","effect_allele","other_allele","beta","standard_error")]
+write.table(f1,file="/well/todd/users/jinshaw/t1d_risk/results/vcf_all/meta/summary_stats_gwascat.tsv",sep="\t", quote=F,col.names=T,row.names=F)
+
+
 png(file="/well/todd/users/jinshaw/output/t1d_risk/hrc/vcf_all/all_pic_post_qc_adjusted_5pc_diff_dups_dropped.png",
     res=200, width=15, height=18, units="cm")
 par(mfrow=c(2,1))
