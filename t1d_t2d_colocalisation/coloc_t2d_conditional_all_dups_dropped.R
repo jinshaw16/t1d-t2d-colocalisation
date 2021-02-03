@@ -9,11 +9,13 @@ library(ggbio)
 library(Homo.sapiens)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(purrr)
+library(cowplot)
+library(scales)
 
 #receieved conditional results from the 42 identified overlapping regions to FDR significance from Anubha.
 #reading these in and assessing colocalisation between all the possible T1D and T2D signals.
 
-outdir<-"/well/todd/users/jinshaw/output/t1d_risk/hrc/vcf/meta_sardinia/newml/coloc/fdr/conditional/"
+outdir<-"/well/todd/users/jinshaw/output/t1d_risk/hrc/vcf/meta_sardinia/newml/coloc/fdr/conditional/up/"
 #load T1D signals:
 load(file="/well/todd/users/jinshaw/t1d_risk/vcf/processed/conditional/results/all_signals_t2d_suggestive.RData")
 
@@ -114,7 +116,8 @@ probs$minpos<-min(bd$position)
 probs$maxpos<-max(bd$position)
 probs$chromosome<-max(bd$chromosome)
 if(plot==TRUE){
-system(paste0("tabix /well/todd/users/jinshaw/t1d_risk/T1D.Affy.chr",max(bd$chromosome),".vcf.gz ",max(bd$chromosome),":",ceiling(min(bd$position)),"-",ceiling(max(bd$position)), " -h > /well/todd/users/jinshaw/t1d_risk/regs/",line,"_region_affy.vcf"))
+system(paste0("tabix /well/todd/users/jinshaw/t1d_risk/T1D.Affy.chr",max(bd$chromosome),".vcf.gz ",max(bd$chromosome),":",
+ceiling(min(bd$position)),"-",ceiling(max(bd$position)), " -h > /well/todd/users/jinshaw/t1d_risk/regs/",line,"_region_affy.vcf"))
 system(paste0("plink --vcf /well/todd/users/jinshaw/t1d_risk/regs/",line,"_region_affy.vcf --double-id --make-bed --out /well/todd/users/jinshaw/t1d_risk/regs/",line))
 
 init<-read.plink(fam=paste0("/well/todd/users/jinshaw/t1d_risk/regs/",line,".fam"),
@@ -134,21 +137,23 @@ lds$id=rownames(lds)
 dfb1<-merge(bd,lds,by="id")
 colnames(dfb1)[ncol(dfb1)]<-"ld"
 o1<-ggplot(data=dfb1, aes(position, logp_t2d, colour=ld)) + geom_point() +
-scale_y_continuous(name=bquote('T2D '*-log[10] *' p-value'))  +
+scale_y_continuous(name=bquote('T2D '*-log[10]*~italic(p)~'value'))  +
 scale_color_gradient2(name=paste0("LD with T2D \nindex variant"),low = "black",
 midpoint = 0.5,
 mid = "orange",
 high = "red",
-space="Lab") #+
+space="Lab") +
+scale_x_continuous(labels=comma) #+
 #annotate("text", x=min+75000, y=max(b$logp_t2d), label=paste0("Colocalisation \nposterior probability=",round(probs[6],digits=3))) #+
 #annotate("text", x=max-75000, y=max(b$logp_t2d), label=paste0(gene))
 o2<-ggplot(data=dfb1, aes(position, logp_t1d, colour=ld)) + geom_point() +
-scale_y_continuous(name=bquote('T1D '*-log[10] *' p-value')) +
+scale_y_continuous(name=bquote('T1D '*-log[10]*~italic(p)~'value')) +
 scale_color_gradient2(name=paste0("LD with T2D \nindex variant"),low = "black",
 midpoint = 0.5,
 mid = "orange",
 high = "red",
-space="Lab")
+space="Lab") +
+scale_x_continuous(labels=comma)
 
 data(genesymbol, package = "biovizBase")
 g <- genesymbol[seqnames(genesymbol) == paste0('chr',max(bd$chromosome))]
@@ -168,10 +173,13 @@ ks<-gs[gs$diff1==min(gs$diff1),]
 ks<-ks[1,]
 gene<-ks$symbol
 
-t1<-autoplot(Homo.sapiens, which = g)
+t1<-autoplot(Homo.sapiens, which = g) +
+scale_x_continuous(labels=comma)
 
 t<-tracks(t1,o1,o2, xlab=paste0("Position along chromosome ",max(bd$chromosome)))
-ggsave(t,file=paste0(outdir,gene,"_",line,"_tracks_5pc_diff_dups_drop_t1dsig_",t1dsig,"_t2dsig_",t2dsig,".png"), height=20, width=20, units="cm", dpi=400)
+png(file=paste0(outdir,gene,"_",line,"_tracks_5pc_diff_dups_drop_t1dsig_",t1dsig,"_t2dsig_",t2dsig,".png"), height=20, width=20, units="cm", res=400)
+print({t})
+dev.off()
 }
 if(plot==FALSE){
 data(genesymbol, package = "biovizBase")
@@ -254,7 +262,7 @@ probs$line=line
 message(paste0("Done ",line))
 return(probs)
 }
-allconds1<-lapply(lines, t2dcondassoc)
+allconds1<-mclapply(lines, t2dcondassoc)
 allconds1<-do.call("rbind",allconds1)
 
 
@@ -293,7 +301,7 @@ probs$t1dsig=c(1:length(t1dassocs))
 probs$line=line
 return(probs)
 }
-allconds2<-lapply(linest1, t1dcondassoc)
+allconds2<-mclapply(linest1, t1dcondassoc)
 allconds2<-do.call("rbind",allconds2)
 
 
@@ -350,7 +358,7 @@ return(probs)
 }
 
 lboth<-lines[lines %in% linest1]
-allconds3<-lapply(lboth,condcond)
+allconds3<-mclapply(lboth,condcond)
 allconds3<-do.call("rbind",allconds3)
 
 
