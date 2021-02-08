@@ -375,7 +375,7 @@ gene<-ks$symbol
 t1<-autoplot(Homo.sapiens, which = g) +
 scale_x_continuous(labels=comma)
 
-t<-tracks(t1,o1,o2, xlab=paste0("Position along chromosome ",chrom))
+t<-tracks(t1,o1,o2, xlab=paste0("Position along chromosome ",chrom, " (bp)"))
 png(file=paste0(outdir,gene,"_",line,"_tracks_5pc_diff_dups_drop.png"), height=20, width=20, units="cm", res=400)
 print({t})
 dev.off()
